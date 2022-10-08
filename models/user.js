@@ -11,10 +11,14 @@ const user = db.define('User',{
     username:{
         type: DataTypes.STRING,
         unique: true,
-        allowNull: false,
         validate: {
+            isEmpty(value){
+                if(typeof value === 'undefined' || value == null){
+                    throw new Error('Username cannot be empty');
+                }
+            },
             isShort(value){
-                if(value.length < 5){
+                if(value.length < 3){
                     throw new Error('Username too short');
                 }
             }
@@ -22,12 +26,27 @@ const user = db.define('User',{
     },
     password:{
         type: DataTypes.STRING,
-        allowNull: false
+        validate: {
+            isEmpty(value){
+                if(typeof value === 'undefined' || value == null){
+                    throw new Error('Password cannot be empty');
+                }
+            },
+            isShort(value){
+                if(value.length < 3){
+                    throw new Error('Password too short');
+                }
+            }
+        }
     },
     email:{
         type: DataTypes.STRING,
-        allowNull: false,
         validate:{
+            isEmpty(value){
+                if(typeof value === 'undefined' || value == null){
+                    throw new Error('Email address cannot be empty');
+                }
+            },
             isEmail: {
                 msg: "Email is invalid"
             }
@@ -35,13 +54,30 @@ const user = db.define('User',{
     },
     gender:{
         type: DataTypes.STRING,
-        allowNull: false,
         defaultValue: 'male',
         validate: {
+            isEmpty(value){
+                if(typeof value === 'undefined' || value == null){
+                    throw new Error('Gender cannot be empty');
+                }
+            },
             isGenderValid(value){
                 let arr = ['male','female'];
                 if(!arr.includes(value)){
                     throw new Error('Gender is invalid');
+                }
+            }
+        }
+    },
+    imageUrl:{
+        type: DataTypes.TEXT
+    },
+    roleId:{
+        type: DataTypes.INTEGER,
+        validate:{
+            isEmpty(value){
+                if(typeof value === 'undefined' || value == null){
+                    throw new Error('Please select a role');
                 }
             }
         }
