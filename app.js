@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const app = express();
 
 const db = require('./db');
+const constant = require('./utils/constant');
 
 const Role = require('./models/role');
 const User = require('./models/user');
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use(useragent.express());
 
 const authRoute = require('./routes/auth');
+const productRoute = require('./routes/product');
 
 app.use(async (req,res,next)=>{
     let token = req.header('Authorization');
@@ -59,11 +61,12 @@ app.use(async (req,res,next)=>{
 });
 
 app.use(authRoute);
+app.use(productRoute);
 
 const server = http.createServer(app);
 //http://localhost:5000
 db.sync({
-    force: true
+    //force: true
 }).then(async result=>{
     try{
         let [admin, createdAdmin] = await Role.findOrCreate({
@@ -71,25 +74,40 @@ db.sync({
                 name: 'Admin'
             },
             defaults:{
-                permissions: "access-all"
+                permissions: constant.adminPermissions
             }
         });
+        if(!createdAdmin){
+            await admin.update({
+                permissions: constant.adminPermissions
+            });
+        }
         let [customer, createdCustomer] = await Role.findOrCreate({
             where:{
                 name: 'Customer'
             },
             defaults:{
-                permissions: "get:products"
+                permissions: constant.customerPermissions
             }
         });
+        if(!createdCustomer){
+            await customer.update({
+                permissions: constant.customerPermissions
+            });
+        }
         let [vendor, createdVendor] = await Role.findOrCreate({
             where:{
                 name: 'Vendor'
             },
             defaults:{
-                permissions: "create:products"
+                permissions: constant.vendorPermissions
             }
         });
+        if(!createdVendor){
+            await vendor.update({
+                permissions: constant.vendorPermissions
+            });
+        }
         let [user, createdUser] = await User.findOrCreate({
             where:{
                 username: 'Tony',

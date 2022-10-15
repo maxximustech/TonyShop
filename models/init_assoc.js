@@ -23,7 +23,7 @@ module.exports = ()=>{
     Product.belongsTo(db.models.productCategory,{
         foreignKey: "categoryId"
     });
-    productCategory.hasMany(db.models.Products,{
+    productCategory.hasMany(db.models.Product,{
         foreignKey: "categoryId"
     });
 }

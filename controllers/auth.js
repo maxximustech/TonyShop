@@ -11,7 +11,10 @@ const isAuth = (req, res, next)=> {
 
 exports.isAuth = isAuth;
 
-exports.hasPermission = (perm, req, res, next)=>{
+exports.hasPermission = (perm, req)=>{
+    if(typeof req.User === 'undefined'){
+        return false;
+    }
     let userPerm = req.User.Role.permissions.split(',');
     if(!userPerm.includes(perm) && !userPerm.includes('access-all')){
         return false;

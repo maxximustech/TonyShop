@@ -3,7 +3,188 @@ const router = express.Router();
 
 const productCategory = require('../models/product-category');
 const Product = require('../models/product');
+const authController = require('../controllers/auth');
 
 router.put('/product/category',async (req,res,next)=>{
-    
+    try{
+        if(!authController.hasPermission('create:category',req)){
+            return res.status(403).json({
+                status: 403,
+                message: 'You are not authorized to access this resource'
+            });
+        }
+        let data = req.body;
+        if(typeof data.name === 'undefined' || data.name == null || data.name.trim() === ''){
+            return res.status(400).json({
+                status: 400,
+                message: 'Please enter a category name'
+            });
+        }
+        let slug = require('crypto').randomBytes(15).toString('hex');
+        let [category, created] = await productCategory.findOrCreate({
+            where: {
+                name: data.name
+            },
+            defaults:{
+                slug: slug
+            }
+        });
+        if(!created){
+            return res.status(200).json({
+                status: 200,
+                message: 'This category already exist',
+                category: category
+            });
+        }else{
+            return res.status(201).json({
+                status: 201,
+                message: 'Product category created successfully',
+                category: category
+            });
+        }
+    }catch(err){
+        return res.status(500).json({
+            status: 500,
+            message: err.message
+        });
+    }
 });
+router.post('/category/:slug',async (req,res,next)=>{
+    try{
+        if(!authController.hasPermission('edit:category',req)){
+            return res.status(403).json({
+                status: 403,
+                message: 'You are not authorized to access this resource'
+            });
+        }
+        let data = req.body;
+        if(typeof data.name === 'undefined' || data.name == null || data.name.trim() === ''){
+            return res.status(400).json({
+                status: 400,
+                message: 'Please enter a category name'
+            });
+        }
+        let category = await productCategory.findOne({
+            where:{
+                slug: req.params.slug
+            }
+        });
+        if(category == null){
+            return res.status(404).json({
+                status: 404,
+                message: 'Category could not be found'
+            });
+        }
+        await category.update({
+            name: data.name
+        });
+        return res.status(200).json({
+            status: 200,
+            message: 'Category updated successfully',
+            category: category
+        });
+    }catch(err){
+        return res.status(500).json({
+            status: 500,
+            message: err.message
+        });
+    }
+})
+router.delete('/category/:slug',async (req,res,next)=>{
+    try{
+        if(!authController.hasPermission('delete:category',req)){
+            return res.status(403).json({
+                status: 403,
+                message: 'You are not authorized to access this resource'
+            });
+        }
+        let category = await productCategory.findOne({
+            where:{
+                slug: req.params.slug
+            }
+        });
+        if(category == null){
+            return res.status(404).json({
+                status: 404,
+                message: 'Category could not be found'
+            });
+        }
+        await category.destroy();
+        return res.status(200).json({
+            status: 200,
+            message: 'Category deleted successfully'
+        });
+    }catch(err){
+        return res.status(500).json({
+            status: 500,
+            message: err.message
+        });
+    }
+});
+
+router.put('/product',async (req,res,next)=>{
+    try{
+        if(!authController.hasPermission('create:products',req)){
+            return res.status(403).json({
+                status: 403,
+                message: 'You are not authorized to access this resource'
+            });
+        }
+        let data = req.body;
+        if(typeof data.title === 'undefined' || data.title == null || data.title.trim() === ''){
+            return res.status(400).json({
+                status: 400,
+                message: 'Please add a valid title'
+            });
+        }
+        if(typeof data.description === 'undefined' || data.description == null || data.description.trim() === ''){
+            return res.status(400).json({
+                status: 400,
+                message: 'Please add a valid description'
+            });
+        }
+        if(typeof data.price === 'undefined' || data.price == null || +data.price <= 0){
+            return res.status(400).json({
+                status: 400,
+                message: 'Please add a valid price'
+            });
+        }
+        if(typeof data.category === 'undefined' || data.category == null || +data.category <= 0){
+            return res.status(400).json({
+                status: 400,
+                message: 'Please add a valid category'
+            });
+        }
+        let category = await productCategory.findOne({
+            where:{
+                id: data.category
+            }
+        });
+        if(category == null){
+            return res.status(404).json({
+                status: 404,
+                message: 'Product category does not exist'
+            });
+        }
+        let product = await Product.create({
+            title: data.title,
+            description: data.description,
+            slug: require('crypto').randomBytes(20).toString('hex'),
+            price: data.price,
+            categoryId: data.category,
+            imageUrl: data.imageUrl
+        });
+        return res.status(201).json({
+            status: 201,
+            message: 'Product created successfully',
+            product: product
+        });
+    }catch(err){
+        return res.status(500).json({
+            status: 500,
+            message: err.message
+        });
+    }
+});
+
+module.exports = router;
