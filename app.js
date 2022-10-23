@@ -108,15 +108,16 @@ db.sync({
                 permissions: constant.vendorPermissions
             });
         }
+        let bcrypt = require('bcryptjs');
         let [user, createdUser] = await User.findOrCreate({
             where:{
                 username: 'Tony',
             },
             defaults:{
-                password: 'wwewrew',
+                password: bcrypt.hashSync('12345', bcrypt.genSaltSync(14)),
                 email: 'frewrdf@soso.com',
                 gender: 'male',
-                roleId: customer.id
+                roleId: admin.id
             }
         });
         server.listen(5000);

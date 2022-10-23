@@ -29,6 +29,10 @@ const product = db.define('Product',{
     },
     imageUrl:{
         type: DataTypes.TEXT
+    },
+    userId:{
+        type: DataTypes.INTEGER,
+        allowNull: false
     }
 });
 
