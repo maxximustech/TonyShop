@@ -352,4 +352,41 @@ router.put('/product/:slug/cart',async (req,res,next)=>{
     }
 });
 
+router.delete('/product/:slug/cart',async (req,res,next)=>{
+    try{
+        if(!authController.hasPermission('add-to-cart',req)){
+            return res.status(403).json({
+                status: 403,
+                message: 'You are not authorized to access this resource'
+            });
+        }
+        let product = await Product.findOne({
+            where:{
+                slug: req.params.slug
+            }
+        });
+        if(product == null){
+            return res.status(404).json({
+                status: 404,
+                message: 'Product does not exist'
+            });
+        }
+        await Cart.destroy({
+            where: {
+                userId: req.User.id,
+                productId: product.id
+            }
+        });
+        return res.status(200).json({
+            status: 200,
+            message: 'Product removed from cart successfully'
+        });
+    }catch(err){
+        return res.status(500).json({
+            status: 500,
+            message: err.message
+        });
+    }
+});
+
 module.exports = router;

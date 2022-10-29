@@ -7,6 +7,7 @@ const Session = require('./session');
 const productCategory = require('./product-category');
 const Product = require('./product');
 const Cart = require('./cart');
+const Order = require('./order');
 
 module.exports = ()=>{
     User.belongsTo(db.models.Role, {
@@ -40,6 +41,12 @@ module.exports = ()=>{
        foreignKey: "productId"
     });
     User.hasMany(db.models.Cart,{
+       foreignKey: "userId"
+    });
+    Order.belongsTo(db.models.User,{
+       foreignKey: "userId"
+    });
+    User.hasMany(db.models.Order,{
        foreignKey: "userId"
     });
 }
