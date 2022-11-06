@@ -97,6 +97,12 @@ router.post('/auth',async (req,res,next)=>{
         });
     }
 });
-
+router.get('/users', async (req,res,next)=>{
+    res.status(200).json({
+        status: 200,
+        message: "Users fetched successfully",
+        users: await User.findAll()
+    });
+});
 
 module.exports = router;

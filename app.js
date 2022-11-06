@@ -2,9 +2,9 @@ const http = require('http');
 const express = require('express');
 const useragent = require('express-useragent');
 const jwt = require("jsonwebtoken");
+const cors = require("cors");
 
 const app = express();
-
 const db = require('./db');
 const constant = require('./utils/constant');
 
@@ -15,6 +15,7 @@ const Session = require('./models/session');
 const init_assoc = require('./models/init_assoc');
 init_assoc();
 
+app.use(cors());
 app.use(express.json());
 app.use(useragent.express());
 
