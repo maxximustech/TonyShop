@@ -62,7 +62,8 @@ router.post('/auth',async (req,res,next)=>{
         let user = await User.findOne({
             where:{
                 username: data.username
-            }
+            },
+            include: [Role]
         });
         if(user == null || !bcrypt.compareSync(data.password, user.password)){
             res.status(401).json({
@@ -88,7 +89,8 @@ router.post('/auth',async (req,res,next)=>{
             status: 200,
             message: 'User logged in successfully',
             user: user,
-            token: jwtToken
+            token: jwtToken,
+            permissions: user.Role.permissions.split(",")
         });
     }catch(err){
         res.status(500).json({
@@ -103,6 +105,21 @@ router.get('/users', async (req,res,next)=>{
         message: "Users fetched successfully",
         users: await User.findAll()
     });
+});
+router.get('/auth',async(req,res,next)=>{
+    if(typeof req.User !== 'undefined'){
+        res.status(200).json({
+            status: 200,
+            message: "Users fetched successfully",
+            user: req.User,
+            permissions: req.User.Role.permissions.split(",")
+        });
+    }else{
+        res.status(401).json({
+            status: 401,
+            message: "You need to login"
+        });
+    }
 });
 
 module.exports = router;
