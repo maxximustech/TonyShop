@@ -292,7 +292,7 @@ router.post('/product/:slug',async (req,res,next)=>{
             message: err.message
         });
     }
-})
+});
 router.delete('/product/:slug',async (req,res,next)=>{
     try{
         if(!authController.hasPermission('delete:products',req)){
@@ -330,6 +330,26 @@ router.delete('/product/:slug',async (req,res,next)=>{
         });
     }
 });
+router.get('/products',async (req,res,next)=>{
+    try{
+        let products = await Product.findAll({
+            order: [
+                ['updatedAt','DESC']
+            ]
+        });
+        
+        return res.status(200).json({
+            status: 200,
+            message: 'Product fetched successfully',
+            products: products
+        });
+    }catch(err){
+        return res.status(500).json({
+            status: 500,
+            message: err.message
+        });
+    }
+})
 
 router.put('/product/:slug/cart',async (req,res,next)=>{
     try{
