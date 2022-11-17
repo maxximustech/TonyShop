@@ -90,7 +90,7 @@ router.post('/category/:slug',async (req,res,next)=>{
             message: err.message
         });
     }
-})
+});
 router.delete('/category/:slug',async (req,res,next)=>{
     try{
         if(!authController.hasPermission('delete:category',req)){
@@ -122,7 +122,28 @@ router.delete('/category/:slug',async (req,res,next)=>{
         });
     }
 });
-
+router.get('/category',async (req,res,next)=>{
+    try{
+        if(!authController.hasPermission('get:category',req)){
+            return res.status(403).json({
+                status: 403,
+                message: 'You are not authorized to access this resource'
+            });
+        }
+        let category = await productCategory.findAll();
+        
+        return res.status(200).json({
+            status: 200,
+            message: 'Category fetched successfully',
+            category: category
+        });
+    }catch(err){
+        return res.status(500).json({
+            status: 500,
+            message: err.message
+        });
+    }
+});
 router.put('/product',async (req,res,next)=>{
     try{
         if(!authController.hasPermission('create:products',req)){
