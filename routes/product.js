@@ -130,7 +130,11 @@ router.get('/category',async (req,res,next)=>{
                 message: 'You are not authorized to access this resource'
             });
         }
-        let category = await productCategory.findAll();
+        let category = await productCategory.findAll({
+            order: [
+                ['id','DESC']
+            ]
+        });
         
         return res.status(200).json({
             status: 200,
