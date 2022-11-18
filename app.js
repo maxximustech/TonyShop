@@ -22,6 +22,7 @@ app.use(useragent.express());
 const authRoute = require('./routes/auth');
 const productRoute = require('./routes/product');
 const orderRoute = require('./routes/order');
+const otherRoute = require('./routes/other');
 
 app.use(async (req,res,next)=>{
     let token = req.header('Authorization');
@@ -65,6 +66,7 @@ app.use(async (req,res,next)=>{
 app.use(authRoute);
 app.use(productRoute);
 app.use(orderRoute);
+app.use(otherRoute);
 
 const server = http.createServer(app);
 //http://localhost:5000
