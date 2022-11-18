@@ -8,11 +8,17 @@ const authController = require('../controllers/auth');
 //const upload = multer({dest: 'uploads/'});
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, path.join(__dirname,'../uploads'));//
+        if(!authController.hasPermission('upload-image',req)){
+            return;
+        }
+        cb(null, path.join(__dirname,'../public/uploads'));//
     },
     filename: function (req, file, cb) {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-      cb(null, uniqueSuffix+'-'+file.originalname);
+        if(!authController.hasPermission('upload-image',req)){
+            return;
+        }
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
+        cb(null, uniqueSuffix+'-'+file.originalname);
     }
   })
 const upload = multer({ storage: storage })
@@ -27,10 +33,16 @@ router.put('/upload',upload.single('avatar'),async(req,res,next)=>{
                 message: 'You are not authorized to access this resource'
             });
         }
+        if(typeof req.file === 'undefined'){
+            res.status(400).json({
+                status: 400,
+                message: 'No file uploaded'
+            });
+        }
         res.status(201).json({
             status: 201,
             message: 'File uploaded successfully',
-            path: req.file.path
+            path: 'uploads/'+req.file.filename
         });
     }catch(err){
         return res.status(500).json({
