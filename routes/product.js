@@ -443,6 +443,9 @@ router.get('/cart',async (req,res,next)=>{
             });
         }
         let carts = await Cart.findAll({
+            where:{
+                userId: req.User.id
+            },
             include: [Product],
             order: [
                 ['updatedAt','DESC']
