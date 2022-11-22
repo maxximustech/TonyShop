@@ -451,7 +451,7 @@ router.get('/cart',async (req,res,next)=>{
         
         return res.status(200).json({
             status: 200,
-            message: 'Product fetched successfully',
+            message: 'Cart fetched successfully',
             carts: carts
         });
     }catch(err){
