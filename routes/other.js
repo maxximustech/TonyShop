@@ -34,7 +34,7 @@ router.put('/upload',upload.single('avatar'),async(req,res,next)=>{
             });
         }
         if(typeof req.file === 'undefined'){
-            res.status(400).json({
+            return res.status(400).json({
                 status: 400,
                 message: 'No file uploaded'
             });
