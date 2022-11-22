@@ -24,6 +24,7 @@ const authRoute = require('./routes/auth');
 const productRoute = require('./routes/product');
 const orderRoute = require('./routes/order');
 const otherRoute = require('./routes/other');
+const { resolve4 } = require('dns');
 
 app.use(async (req,res,next)=>{
     let token = req.header('Authorization');
@@ -47,7 +48,7 @@ app.use(async (req,res,next)=>{
         },
         include: [{
             model: User,
-            include: [Role,Cart]
+            include: [Role]
         }]
     });
     if(session == null){
