@@ -11,6 +11,7 @@ const constant = require('./utils/constant');
 const Role = require('./models/role');
 const User = require('./models/user');
 const Session = require('./models/session');
+const Cart = require('./models/cart');
 
 const init_assoc = require('./models/init_assoc');
 init_assoc();
@@ -46,7 +47,7 @@ app.use(async (req,res,next)=>{
         },
         include: [{
             model: User,
-            include: [Role]
+            include: [Role,Cart]
         }]
     });
     if(session == null){

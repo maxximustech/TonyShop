@@ -434,4 +434,32 @@ router.delete('/product/:slug/cart',async (req,res,next)=>{
     }
 });
 
+router.get('/cart',async (req,res,next)=>{
+    try{
+        if(!authController.hasPermission('add-to-cart',req)){
+            return res.status(403).json({
+                status: 403,
+                message: 'You are not authorized to access this resource'
+            });
+        }
+        let carts = await Cart.findAll({
+            include: [Product],
+            order: [
+                ['updatedAt','DESC']
+            ]
+        });
+        
+        return res.status(200).json({
+            status: 200,
+            message: 'Product fetched successfully',
+            carts: carts
+        });
+    }catch(err){
+        return res.status(500).json({
+            status: 500,
+            message: err.message
+        });
+    }
+})
+
 module.exports = router;
