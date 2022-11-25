@@ -366,9 +366,6 @@ router.put('/product/:slug/cart',async (req,res,next)=>{
             });
         }
         let qty = +req.body.qty || 1;
-        if(typeof req.body.refresh !== 'undefined'){
-            qty = req.body.qty || 1;
-        }
         let [cart, cartCreated] = await Cart.findOrCreate({
             where:{
                 productId: product.id,
@@ -380,7 +377,7 @@ router.put('/product/:slug/cart',async (req,res,next)=>{
         });
         if(!cartCreated){
             await cart.update({
-                qty: cart.qty + qty
+                qty: typeof req.body.refresh !== 'undefined'?qty:cart.qty + qty
             });
         }
         return res.status(200).json({
