@@ -124,16 +124,11 @@ router.delete('/category/:slug',async (req,res,next)=>{
 });
 router.get('/category',async (req,res,next)=>{
     try{
-        if(!authController.hasPermission('get:category',req)){
-            return res.status(403).json({
-                status: 403,
-                message: 'You are not authorized to access this resource'
-            });
-        }
         let category = await productCategory.findAll({
             order: [
                 ['id','DESC']
-            ]
+            ],
+            include: typeof req.query.fetchProduct !== 'undefined' ? Product : undefined
         });
         
         return res.status(200).json({
