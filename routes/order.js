@@ -8,6 +8,7 @@ const Product = require("../models/product");
 const constants = require("../utils/constant");
 
 const { Op } = require("sequelize");
+const constant = require("../utils/constant");
 
 router.put('/checkout',async (req,res,next)=>{
     try{
@@ -129,6 +130,7 @@ router.get('/order/:ref',async(req,res,next)=>{
             });
         }
         order.items = JSON.parse(order.items);
+        order.statusText = constant.orderStatus[order.status] || constant.orderStatus["0"];
         return res.status(200).json({
             status: 200,
             message: "Order fetched successfully",
@@ -156,6 +158,7 @@ router.get('/orders',async(req,res,next)=>{
         });
         orders = orders.map(order=>{  
             order.items = JSON.parse(order.items);
+            order.statusText = constant.orderStatus[order.status] || constant.orderStatus["0"];
             return order;
         })
         return res.status(200).json({
@@ -179,6 +182,11 @@ router.get('admin/orders',async(req,res,next)=>{
             });
         }
         let orders = await Order.findAll();
+        orders = orders.map(order=>{  
+            order.items = JSON.parse(order.items);
+            order.statusText = constant.orderStatus[order.status] || constant.orderStatus["0"];
+            return order;
+        })
         return res.status(200).json({
             status: 200,
             message: "Orders fetched successfully",
