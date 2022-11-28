@@ -118,7 +118,8 @@ router.get('/order/:ref',async(req,res,next)=>{
         }
         let order = await Order.findOne({
             where:{
-                ref: req.params.ref
+                ref: req.params.ref,
+                userId: req.User.id
             }
         });
         if(order == null){
@@ -127,6 +128,7 @@ router.get('/order/:ref',async(req,res,next)=>{
                 message: "Order could not be found"
             });
         }
+        order.items = JSON.parse(order.items);
         return res.status(200).json({
             status: 200,
             message: "Order fetched successfully",
@@ -152,6 +154,10 @@ router.get('/orders',async(req,res,next)=>{
                 userId: req.User.id
             }
         });
+        orders = orders.map(order=>{  
+            order.items = JSON.parse(order.items);
+            return order;
+        })
         return res.status(200).json({
             status: 200,
             message: "Orders fetched successfully",
