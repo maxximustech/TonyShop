@@ -64,8 +64,7 @@ app.use(async (req,res,next)=>{
     req.User = session.User;
     next();
 });
-app.use(express.static('public'))
-asdsa;
+app.use(express.static('public'));
 app.use(authRoute);
 app.use(productRoute);
 app.use(orderRoute);
