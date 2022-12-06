@@ -65,10 +65,19 @@ app.use(async (req,res,next)=>{
     next();
 });
 app.use(express.static('public'))
+asdsa;
 app.use(authRoute);
 app.use(productRoute);
 app.use(orderRoute);
 app.use(otherRoute);
+
+app.use((err,req,res,next)=>{
+    let statusCode = err.statusCode || 500;
+    res.status(statusCode).json({
+        status: statusCode,
+        message: err.message
+    });
+});
 
 const server = http.createServer(app);
 //http://localhost:5000
